@@ -1,0 +1,13 @@
+{
+  "name": "ga-consumer",
+  "license": "ISC",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "test": "jest"
+  },
+  "dependencies": {
+    "events-producer": "^1.0.0"
+  },
+  "devDependencies": {}
+}

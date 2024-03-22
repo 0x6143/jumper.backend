@@ -1,0 +1,51 @@
+version: '3'
+include:
+  # start kafka services
+  - docker-compose.kafka.yml
+
+services:
+  events-producer:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    depends_on:
+      kafka:
+        condition: service_healthy
+      schema-registry:
+        condition: service_healthy
+    ports:
+      - 3001:3001
+    volumes:
+      - .:/app
+      # exclude hosts node_modules when mounting volume
+      - /app/node_modules/
+    env_file:
+      - .env.dev
+    environment:
+      - SCHEMA_REGISTRY_HOST=http://schema-registry:8081
+      - KAFKA_BROKERS_LIST=kafka:9092
+      - LOG_LEVEL=debug
+    command: yarn dev:events-producer
+
+  ga-consumer:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    depends_on:
+      kafka:
+        condition: service_healthy
+      schema-registry:
+        condition: service_healthy
+    ports:
+      - 3002:3002
+    volumes:
+      - .:/app
+      # exclude hosts node_modules when mounting volume
+      - /app/node_modules/
+    env_file:
+      - .env.dev
+    environment:
+      - SCHEMA_REGISTRY_HOST=http://schema-registry:8081
+      - KAFKA_BROKERS_LIST=kafka:9092
+      - LOG_LEVEL=debug
+    command: yarn dev:ga-consumer
